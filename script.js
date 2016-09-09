@@ -15,6 +15,13 @@ function createMatrix()
 }
 
 //
+// Определение индекса ячейки.
+//
+function indexCell(row, col) {
+	return ( (col - 1) + (20 * (row - 1)) );
+}
+
+//
 // Чтение ячейки матрицы.
 //
 function getCell(row, col)
@@ -23,9 +30,8 @@ function getCell(row, col)
 	// должна вернуть true, если она закрашена,
 	// false, если не закрашена.
 	
-	var numCell = (( col + (20 * (row - 1)) ) - 1);
 	var matrix = document.getElementById('matrix');
-	if (matrix.children[numCell].className == 'cell bg')
+	if (matrix.children[indexCell(row, col)].className == 'cell bg')
 		return true;
 	else
 		return false;
@@ -40,70 +46,26 @@ function setCell(row, col, val)
 	// если val == true, закрашивает ячейку,
 	// иначе убирает закраску.
 
-	var numCell = (( col + (20 * (row - 1)) ) - 1);
 	var matrix = document.getElementById('matrix');
 	if (val == true)
-		matrix.children[numCell].className = 'cell bg';
+		matrix.children[indexCell(row, col)].className = 'cell bg';
 	else
-		matrix.children[numCell].className = 'cell';
+		matrix.children[indexCell(row, col)].className = 'cell';
 
 }
 
-// Функция добавляет ячейку для охоты.
-function setVCell(row, col, val)
-{ 
-	// Функция принимает координаты ячейки
-	// если val == true, закрашивает ячейку,
-	// иначе убирает закраску.
-
-	var numCell = (( col + (20 * (row - 1)) ) - 1);
-	var matrix = document.getElementById('matrix');
-	if (val == true)
-		matrix.children[numCell].className = 'cell victim';
-	else
-		matrix.children[numCell].className = 'cell';
-
-}
-
-// Функция провереяет не съедена ли жертва.
-function getVCell(row, col)
-{
-	// Функция принимает координаты ячейки
-	// должна вернуть true, если она закрашена,
-	// false, если не закрашена.
-	
-	var numCell = (( col + (20 * (row - 1)) ) - 1);
-	var matrix = document.getElementById('matrix');
-	if (matrix.children[numCell].className == 'cell victim')
-		return true;
-	else
-		return false;
-}
-
+//
 // Функция передвижения ячейки.
+//
 function moveCell(row, col, key) {
+	var old_row = row;
+	var old_col = col;
 	setCell(row, col, false);
 
-	if (key == 37)
-		col -= 1;
-	if (key == 38)
-		row -= 1;
-	if (key == 39)
-		col += 1;
-	if (key == 40)
-		row += 1;
+	
 
-	if (row > 20)
-		row = 20;
-	if (row < 1)
-		row = 1;
-	if (col > 20)
-		col = 20;
-	if (col < 1)
-		col = 1; 
-
-	if (getVCell(row, col))
-		alert('Игра окончена!');
+	//if (getCell(row, col))
+		//alert('Игра окончена!');
 	setCell(row, col, true);
 }
 
@@ -112,20 +74,41 @@ function moveCell(row, col, key) {
 //
 window.onload = function()
 {
+	// Создаем поле.
 	createMatrix();	
-	setCell(3, 2, true);
-	setVCell(19, 18, true);
-	
-	onkeydown = function() {
-		k = event.keyCode;
-		for (var x = 1; x <= 20; x++ ){
-			for (var y = 1; y <= 20; y++){
-				if (getCell(x, y)) {
-					var work_x = x;
-					var work_y = y;
-				}
-			}
+	// Задаем координаты игрока и мишени.
+	var pl_x = 3;
+	var pl_y = 2;
+	var target_x = 15;
+	var target_y = 16;
+	// Добавляем на поле игрока и мишень.
+	setCell(pl_x, pl_y, true);
+	setCell(target_x, target_y, true);
+	// Обрабатываем нажание клавиш.
+	window.onkeydown = function() {
+		var key = event.keyCode;
+		if ((pl_x == target_x) && (pl_y == target_y))
+			alert("Игра окончена, товарищ!");
+		else {
+			setCell(pl_x, pl_y, false);
+			if (key == 37)
+				pl_y -= 1;
+			if (key == 38)
+				pl_x -= 1;
+			if (key == 39)
+				pl_y += 1;
+			if (key == 40)
+				pl_x += 1;
+
+			if (pl_x > 20)
+				pl_x = 20;
+			if (pl_x < 1)
+				pl_x = 1;
+			if (pl_y > 20)
+				pl_y = 20;
+			if (pl_y < 1)
+				pl_y = 1;
+			setCell(pl_x, pl_y, true);		
 		}
-		moveCell(work_x, work_y, k);	
 	}
 }				
