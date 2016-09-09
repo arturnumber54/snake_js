@@ -55,21 +55,6 @@ function setCell(row, col, val)
 }
 
 //
-// Функция передвижения ячейки.
-//
-function moveCell(row, col, key) {
-	var old_row = row;
-	var old_col = col;
-	setCell(row, col, false);
-
-	
-
-	//if (getCell(row, col))
-		//alert('Игра окончена!');
-	setCell(row, col, true);
-}
-
-//
 // Точка входа.
 //
 window.onload = function()
