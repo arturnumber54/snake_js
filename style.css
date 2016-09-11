@@ -1,4 +1,4 @@
-#matrix
+#matrix1
 {
 	width: 400px;
 	height: 400px;
@@ -6,7 +6,7 @@
 	border-left: 1px solid #999;	
 }
 
-#matrix .cell
+#matrix1 .cell
 {
 	float: left;
 	width: 19px;
@@ -16,10 +16,6 @@
 }
 
 
-#matrix .bg {
+#matrix1 .on {
 	background-color: red;
-}
-
-#matrix .victim {
-	background-color: black;
 }

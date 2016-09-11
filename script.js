@@ -1,57 +1,53 @@
 //
-// Создание матрицы.
+// Создание класса
 //
-function createMatrix()
-{
-	var matrix = document.getElementById('matrix');
-	var n = 20 * 20;	
-	
-	for (var i = 0; i < n; i++)
-	{
-		var div = document.createElement('div');
-		div.className = 'cell';
-		matrix.appendChild(div);
+function Matrix(containerId, rows, cols) {
+	// id контейнера матрицы
+	this.containerId = containerId;
+
+	// Количество строк в матрице
+	this.rows = rows;
+
+	// Количество столбцов в матрице
+	this.cols = cols;
+
+	// Функция создания матрицы
+	this.create = function() {
+		var matrix = document.getElementById(this.containerId);
+		var n = this.rows * this.cols;
+
+		matrix.innerHTML = '';
+
+		for(var i = 0; i < n; i++) {
+			var div = document.createElement('div');
+			div.className = 'cell';
+			matrix.appendChild(div);
+		}
 	}
-}
 
-//
-// Определение индекса ячейки.
-//
-function indexCell(row, col) {
-	return ( (col - 1) + (20 * (row - 1)) );
-}
+	// Функция проверки закраски ячейки
+	this.getCell = function(row, col) {
+		var ind = (row - 1) * this.cols + col - 1;
+		var matrix = document.getElementById(this.containerId);
+		var cell = matrix.children[ind];
 
-//
-// Чтение ячейки матрицы.
-//
-function getCell(row, col)
-{
-	// Функция принимает координаты ячейки
-	// должна вернуть true, если она закрашена,
-	// false, если не закрашена.
-	
-	var matrix = document.getElementById('matrix');
-	if (matrix.children[indexCell(row, col)].className == 'cell bg')
-		return true;
-	else
-		return false;
-}
+		if (cell.className == 'cell on')
+			return true;
+		else
+			return false;
+	}
 
-//
-// Установка ячейки матрицы.
-//
-function setCell(row, col, val)
-{ 
-	// Функция принимает координаты ячейки
-	// если val == true, закрашивает ячейку,
-	// иначе убирает закраску.
+	// Функция для закраски и удаления закраски
+	this.setCell = function(row, col, val) {
+		var ind = (row - 1) * this.cols + col - 1;
+		var matrix = document.getElementById(this.containerId);
+		var cell = matrix.children[ind];
 
-	var matrix = document.getElementById('matrix');
-	if (val == true)
-		matrix.children[indexCell(row, col)].className = 'cell bg';
-	else
-		matrix.children[indexCell(row, col)].className = 'cell';
-
+		if (val)
+			cell.className = 'cell on';
+		else
+			cell.className = 'cell';
+	}
 }
 
 //
@@ -59,23 +55,26 @@ function setCell(row, col, val)
 //
 window.onload = function()
 {
+	// Создаем экземпляр класса Matrix
+	var m1 = new Matrix('matrix1', 20, 20);
+
 	// Создаем поле.
-	createMatrix();	
+	m1.create();	
 	// Задаем координаты игрока и мишени.
 	var pl_x = 3;
 	var pl_y = 2;
 	var target_x = 15;
 	var target_y = 16;
 	// Добавляем на поле игрока и мишень.
-	setCell(pl_x, pl_y, true);
-	setCell(target_x, target_y, true);
+	m1.setCell(pl_x, pl_y, true);
+	m1.setCell(target_x, target_y, true);
 	// Обрабатываем нажание клавиш.
 	window.onkeydown = function() {
 		var key = event.keyCode;
 		if ((pl_x == target_x) && (pl_y == target_y))
 			alert("Игра окончена, товарищ!");
 		else {
-			setCell(pl_x, pl_y, false);
+			m1.setCell(pl_x, pl_y, false);
 			if (key == 37)
 				pl_y -= 1;
 			if (key == 38)
@@ -93,7 +92,7 @@ window.onload = function()
 				pl_y = 20;
 			if (pl_y < 1)
 				pl_y = 1;
-			setCell(pl_x, pl_y, true);		
+			m1.setCell(pl_x, pl_y, true);		
 		}
 	}
 }				
