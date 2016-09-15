@@ -1,12 +1,28 @@
 <!DOCTYPE html> 
 <html>
 <head>
-	<title>GAME</title>
+	<title>Змейка</title>
 	<meta charset='utf-8'>
 	<link rel="stylesheet" href="style.css" type="text/css" media="screen" /> 	
+	<script language="javascript" src="jquery-3.1.0.js"></script>
 	<script language="javascript" src="script.js"></script>
 </head>
 <body>
-	<div id="matrix1"></div>
+	<div id="start">
+		<h1>Змейка</h1>
+		Уровень сложности<br/>
+		<button id="oldMan">Пенсионер</button><br/>
+		<button id="noob">Новичёк</button><br/>		
+		<button id="amateur">Любитель</button><br/>
+		<button id="pro">Профи</button><br/>
+		<button id="master">Мастак</button><br/>
+		<button id="superman">Супермэн</button><br/>
+	</div>
+	<div id="container">
+		<div id="matrix1"></div>
+		<div id="scoreText">SCORE<br/>
+			<span id="score">0</span>
+		</div>
+	</div>
 </body>
 </html>

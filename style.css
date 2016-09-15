@@ -1,9 +1,43 @@
+body {
+	background-color: #b5c2b5;
+}
+
+#start {
+	font: 20px sans-serif;
+	text-align: center;
+}
+
+#start button {
+	width: 200px;
+	height: 80px;
+	font: 20px sans-serif;
+	margin-top: 10px;
+}
+
+#start h1 {
+	font: 100px sans-serif;
+	margin: 0; 
+}
+
+#container {
+	margin: 0 auto;
+	width: 1000px;
+	display: none;
+}
+
+#scoreText {
+	font: 25px sans-serif;
+	text-align: right;
+	padding-top: 10px;
+}
+
 #matrix1
 {
-	width: 400px;
-	height: 400px;
+	width: 800px;
+	height: 800px;
 	border-top: 1px solid #999;
-	border-left: 1px solid #999;	
+	border-left: 1px solid #999;
+	float: left;	
 }
 
 #matrix1 .cell
@@ -17,9 +51,9 @@
 
 
 #matrix1 .on {
-	background-color: red;
+	background: url(img/cell.jpg);
 }
 
 #matrix1 .fruit {
-	background-color: green;
+	background: url(img/cell.jpg);
 }

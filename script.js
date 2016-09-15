@@ -1,175 +1,204 @@
-//
-// Создание класса Matrix
-//
-function Matrix(containerId, rows, cols) {
-	// то = это;
-	var that = this;
+$(document).ready(function() {
+	//
+	// Создание класса Matrix.
+	//
+	function Matrix(matrixId, col, row) {
+		// id матрицы.
+		this.matrixId = matrixId;
 
-	// id контейнера матрицы
-	this.containerId = containerId;
+		// Количество столбцов в матрице.
+		this.col = col;
 
-	// Количество строк в матрице
-	this.rows = rows;
+		// Количество строк в матрице.
+		this.row = row;
 
-	// Количество столбцов в матрице
-	this.cols = cols;
+		// Функция создания матрицы.
+		this.create = function() {
+			var n = this.col * this.row; // вычисляем количество элементов
+			var matrix = $('#' + this.matrixId + '');
+			for(var i = 0; i < n; i++) {
+				matrix.append('<div class="cell"></div>');
+			}
+		}
 
-	// Функция создания матрицы
-	this.create = function() {
-		var matrix = document.getElementById(this.containerId);
-		var n = this.rows * this.cols;
+		// Функция проверки закраски ячейки
+		this.getCell = function(col, row, cls) {
+			var ind = (row - 1) * this.col + col - 1;
+			var cell = $('#' + this.matrixId + '> div').eq(ind);
 
-		matrix.innerHTML = '';
+			if (cell.hasClass(''+ cls +''))
+				return true;
+			else
+				return false;
+		}
 
-		for(var i = 0; i < n; i++) {
-			var div = document.createElement('div');
-			div.className = 'cell';
-			matrix.appendChild(div);
+		// Функция добавления закраски ячейки
+		this.setCell = function(col, row, val) {
+			var ind = (row - 1) * this.col + col - 1;
+			var cell = $('#' + this.matrixId + '> div').eq(ind);
+
+			if (val)
+				cell.addClass('on');
+			else
+				cell.removeClass('on');
+		}
+
+		// Функция добавления фруктов
+		this.addFruit = function() {
+			var min = 0;
+			var max = (this.row - 1) * this.col + this.col - 1;
+			var randonNum = Math.floor(Math.random() * (max - min + 1)) + min;
+			var cell = $('#' + this.matrixId + '> div').eq(randonNum);
+			cell.addClass('fruit');
 		}
 	}
 
-	// Функция проверки закраски ячейки
-	this.getCell = function(row, col) {
-		var ind = (row - 1) * this.cols + col - 1;
-		var matrix = document.getElementById(this.containerId);
-		var cell = matrix.children[ind];
+	//
+	// Создание класса Snake.
+	//
+	function Snake(x, y, course) {
+		// то = это;
+		var that = this;
 
-		if (cell.className == 'cell on')
-			return true;
-		else
-			return false;
-	}
+		// Начальная координата головы змейки (x).
+		this.x = x;
 
-	// Функция для закраски и удаления закраски
-	this.setCell = function(row, col, val) {
-		var ind = (row - 1) * this.cols + col - 1;
-		var matrix = document.getElementById(this.containerId);
-		var cell = matrix.children[ind];
+		// Начальная координата головы змейки (y).
+		this.y = y;
 
-		if (val)
-			cell.className = 'cell on';
-		else
-			cell.className = 'cell';
-	}
+		// Массив с координатами всех элементов змейки.
+		this.snake = [];
 
-	// Функция добавления фрукта в случайном месте.
-	this.addFruit = function() {
-		var min = 0;
-		var max = 399;
-		var randonNum = Math.floor(Math.random() * (max - min + 1)) + min;
-		var matrix = document.getElementById(that.containerId);
-		var cell = matrix.children[randonNum];
-		cell.className = 'cell fruit';
-	}
-}
+		// Начальное направление движения.
+		this.course = course;
 
-//
-// Создание класса Snake.
-//
-function Snake(x, y, course) {
-	// то = это;
-	var that = this;
-
-	// Начальная координата головы змейки (x).
-	this.x = x;
-
-	// Начальная координата головы змейки (y).
-	this.y = y;
-
-	// Массив с координатами всех элементов змейки.
-	this.snake = [];
-
-	// Начальное направление движения.
-	this.course = course;
-
-	// Функция отрисовки тела змейки.
-	this.addBody = function(arr) {
-		var matrix = document.getElementById('matrix1');
-		
-		for (var j = 0; j < 400; j++) {
-			var cell = matrix.children[j];
-			var cls = cell.className;
-			var arrCls = cls.split(' '); // Создаем массив из названия класса по пробелу.
-			arrCls.forEach(function(item, i, arrCls) {
-				if (item == 'on')
-					delete arrCls[i]; // Удаляем элемент со значением 'on'.
-			});
-			cell.className = arrCls.join(' '); // Создаем строку из полученного массива.
+		// Функция создания змейки.
+		this.createSnake = function(lenSnake, matrix) {
+			for (var i = 0; i < lenSnake; i++) {
+				if (that.course == 'right')
+					that.snake.push({x:(that.x - i), y:that.y});
+				if (that.course == 'left')
+					that.snake.push({x:(that.x + i), y:that.y});
+				if (that.course == 'up')
+					that.snake.push({x:that.x, y:(that.y + i)});
+				if (that.course == 'down')
+					that.snake.push({x:that.x, y:(that.y - i)});
+			}
+			for (var j = 0; j < that.snake.length; j++) {
+				matrix.setCell(that.snake[j].x, that.snake[j].y, true);
+			}
 		}
 
-		for (var i = 0; i < arr.length; i = i + 2) {
-			var ind = (arr[i + 1] - 1) * 20 + arr[i] - 1;
-			var cell = matrix.children[ind];
-			cell.className = 'cell on';
+		// Функция передвижения змейки
+		this.moveSnake = function(matrix, speed) {
+			var score = 0;
+			var intervalId = setInterval(function(){
+				if (that.course == 'right')
+					that.x++;
+				if (that.course == 'left')
+					that.x--;
+				if (that.course == 'up')
+					that.y--;
+				if (that.course == 'down')
+					that.y++;
+
+				if (matrix.getCell(that.x, that.y, 'fruit')) {
+					that.snake.unshift({x:that.x, y:that.y});
+					var ind = (that.y - 1) * matrix.col + that.x - 1;
+					var cell = $('#' + matrix.matrixId + '> div').eq(ind);
+					cell.removeClass('fruit');
+					matrix.addFruit();
+					score += 100;
+					$('#score').html(score);
+				}
+				
+				if ((that.x > matrix.row) || (that.y > matrix.col) || (that.x < 1) || (that.y < 1) ||
+									matrix.getCell(that.x, that.y, 'on')) {
+					clearInterval(intervalId);
+					alert('Игра окончена!');
+				}
+				else {
+					matrix.setCell(that.snake[(that.snake.length - 1)].x, that.snake[(that.snake.length - 1)].y, false);
+					that.snake.unshift({x:that.x, y:that.y});
+					that.snake.pop();
+					matrix.setCell(that.snake[0].x, that.snake[0].y, true);
+				}
+			}, speed);
+		}
+
+		// Функция обработки нажатия клавиш.
+		this.controlSnake = function(e) {
+			e = e || window.event;
+			var key = e.keyCode || e.which;
+			if ( ((key == 37) || (key == 65)) && (that.course != 'right'))
+				that.course = 'left';
+			if ( ((key == 38) || (key == 87)) && (that.course != 'down'))
+				that.course = 'up';
+			if ( ((key == 39) || (key == 68)) && (that.course != 'left'))
+				that.course = 'right';
+			if ( ((key == 40) || (key == 83)) && (that.course != 'up'))
+				that.course = 'down';
+		}
+
+		// Функция роста змейки
+		this.growSnake = function(xg, yg) {
+			that.snake.unshift({x:xg, y:yg});
 		}
 	}
 
-	// Функция движения змейки.
-	this.gamePlay = function() {
-		setInterval(function(){
-			if (that.course == 'right') {
-				that.x++;
-			}
-			if (that.course == 'left') {
-				that.x--;
-			}
-			if (that.course == 'up') {
-				that.y--;
-			}
-			if (that.course == 'down') {
-				that.y++;
-			}
-			that.snake.unshift(that.y);
-			that.snake.unshift(that.x);
-			that.snake.pop();
-			that.snake.pop();
-			that.addBody(that.snake);
-		}, 1000);
+
+	//
+	// Функция - ядро игры
+	//
+	function gamePlay(matrix, snake, speed) {
+		// Создаем поле
+		matrix.create();
+		// Создаем фрукт
+		matrix.addFruit();
+
+		// Создаем змейку
+		snake.createSnake(3, matrix);
+		// Вызываем функцию движения
+		snake.moveSnake(matrix, speed);
+		// Вешаем реакцию на события клавиатуры
+		$(document).keydown(snake.controlSnake);
 	}
 
-	// Функция создания змейки.
-	this.createSnake = function(lenSnake) {
-		for (var i = 0; i < lenSnake; i++) {
-			that.snake.push(that.x - i);
-			that.snake.push(that.y);
-		}
-		that.addBody(that.snake);
-	}
-
-	// Функция обработки нажатия клавиш.
-	this.controlSnake = function() {
-		var key = event.keyCode;
-		if ((key == 37) && (that.course != 'right'))
-			that.course = 'left';
-		if ((key == 38) && (that.course != 'down'))
-			that.course = 'up';
-		if ((key == 39) && (that.course != 'left'))
-			that.course = 'right';
-		if ((key == 40) && (that.course != 'up'))
-			that.course = 'down';
-	}
-}
-
-//
-// Точка входа.
-//
-window.onload = function()
-{
 	// Создаем экземпляр класса Matrix
-	var m1 = new Matrix('matrix1', 20, 20);
+	var matrix = new Matrix('matrix1', 40, 40);
 
-	// Создаем поле.
-	m1.create();	
-	
 	// Создаем экземпляр класса Snake
-	var s1 = new Snake(10, 10, 'right');// По умолчанию 'right' (остальное пока не сделано)
-
-	// Создаем тело змейки.
-	s1.createSnake(4);
-	s1.gamePlay();
-	window.onkeydown = s1.controlSnake;
-
-	// Создаем фрукт.
-	m1.addFruit();
+	var snake = new Snake(3, 35, 'right');
 	
-}				
+	// Запускаем игру
+	$('#oldMan').click(function() {
+		$('#start').css({'display':'none'});
+		$('#container').css({'display':'block'});
+		gamePlay(matrix, snake, 500);
+	});
+	$('#noob').click(function() {
+		$('#start').css({'display':'none'});
+		$('#container').css({'display':'block'});
+		gamePlay(matrix, snake, 200);
+	});
+	$('#amateur').click(function() {
+		$('#start').css({'display':'none'});
+		$('#container').css({'display':'block'});
+		gamePlay(matrix, snake, 100);
+	});
+	$('#pro').click(function() {
+		$('#start').css({'display':'none'});
+		$('#container').css({'display':'block'});
+		gamePlay(matrix, snake, 30);
+	});
+	$('#master').click(function() {
+		$('#start').css({'display':'none'});
+		$('#container').css({'display':'block'});
+		gamePlay(matrix, snake, 15);
+	});
+	$('#superman').click(function() {
+		$('#start').css({'display':'none'});
+		$('#container').css({'display':'block'});
+		gamePlay(matrix, snake, 7);
+	});
+});
