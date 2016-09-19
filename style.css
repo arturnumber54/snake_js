@@ -1,21 +1,34 @@
 body {
-	background-color: #b5c2b5;
+	background: url(img/bloodborne.jpg);
+	background-size: cover;
 }
 
 #start {
-	font: 20px sans-serif;
+	font: 20px serif;
 	text-align: center;
+	color: white;
+	padding-top: 400px;
+}
+
+#startText{
+	color: #FFDEAD;
 }
 
 #start button {
 	width: 200px;
-	height: 80px;
-	font: 20px sans-serif;
+	height: 30px;
+	background-color: #8D917A;
+	font: 20px serif;
 	margin-top: 10px;
+	border: none;
+	cursor: pointer;
+	color: #1C1C1C;
+	opacity: 0.9;
+	border-radius: 7px;
 }
 
 #start h1 {
-	font: 100px sans-serif;
+	font: 100px serif;
 	margin: 0; 
 }
 
@@ -26,18 +39,26 @@ body {
 }
 
 #scoreText {
-	font: 25px sans-serif;
+	font: 25px serif;
 	text-align: right;
-	padding-top: 10px;
+	padding-top: 5px;
+	padding-right: 5px;
+	background-color: #8D917A;
+	border-top: 1px solid #4D5645;
+	border-right: 1px solid #4D5645;
+	border-bottom: 1px solid #4D5645;
+	color: #1C1C1C;
+
 }
 
 #matrix1
 {
 	width: 800px;
 	height: 800px;
-	border-top: 1px solid #999;
-	border-left: 1px solid #999;
-	float: left;	
+	border-top: 1px solid #4D5645;
+	border-left: 1px solid #4D5645;
+	float: left;
+	background-color: #8D917A;	
 }
 
 #matrix1 .cell
@@ -45,15 +66,43 @@ body {
 	float: left;
 	width: 19px;
 	height: 19px;	
-	border-bottom: 1px solid #999;
-	border-right: 1px solid #999;	
+	border-bottom: 1px solid #4D5645;
+	border-right: 1px solid #4D5645;	
 }
 
 
 #matrix1 .on {
-	background: url(img/cell.jpg);
+	background-color: #1C1C1C;
 }
 
 #matrix1 .fruit {
-	background: url(img/cell.jpg);
+	background-color: #1C1C1C;
+}
+
+#gameover {
+	width: 802px;
+	height: 802px;
+	background-color: black;
+	display: none;
+	position: absolute;
+	text-align: center;
+	opacity: 0;
+}
+
+#gameover > div {
+	font: 55px serif;
+	margin-top: 360px;
+	color: red;
+}
+
+#more, #main {
+	width: 200px;
+	height: 30px;
+	background-color: #8D917A;
+	font: 20px serif;
+	margin-top: 10px;
+	border: none;
+	cursor: pointer;
+	color: #1C1C1C;
+	border-radius: 7px;
 }

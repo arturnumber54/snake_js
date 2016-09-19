@@ -67,63 +67,51 @@ $(document).ready(function() {
 		this.y = y;
 
 		// Массив с координатами всех элементов змейки.
-		this.snake = [];
+		this.body = [];
 
 		// Начальное направление движения.
 		this.course = course;
 
+		// Жизнь змейки.
+		this.alive = true;
+
 		// Функция создания змейки.
 		this.createSnake = function(lenSnake, matrix) {
+			that.body = [];
 			for (var i = 0; i < lenSnake; i++) {
 				if (that.course == 'right')
-					that.snake.push({x:(that.x - i), y:that.y});
+					that.body.push({x:(that.x - i), y:that.y});
 				if (that.course == 'left')
-					that.snake.push({x:(that.x + i), y:that.y});
+					that.body.push({x:(that.x + i), y:that.y});
 				if (that.course == 'up')
-					that.snake.push({x:that.x, y:(that.y + i)});
+					that.body.push({x:that.x, y:(that.y + i)});
 				if (that.course == 'down')
-					that.snake.push({x:that.x, y:(that.y - i)});
+					that.body.push({x:that.x, y:(that.y - i)});
 			}
-			for (var j = 0; j < that.snake.length; j++) {
-				matrix.setCell(that.snake[j].x, that.snake[j].y, true);
+			for (var j = 0; j < that.body.length; j++) {
+				matrix.setCell(that.body[j].x, that.body[j].y, true);
 			}
 		}
 
 		// Функция передвижения змейки
-		this.moveSnake = function(matrix, speed) {
-			var score = 0;
-			var intervalId = setInterval(function(){
-				if (that.course == 'right')
-					that.x++;
-				if (that.course == 'left')
-					that.x--;
-				if (that.course == 'up')
-					that.y--;
-				if (that.course == 'down')
-					that.y++;
-
-				if (matrix.getCell(that.x, that.y, 'fruit')) {
-					that.snake.unshift({x:that.x, y:that.y});
-					var ind = (that.y - 1) * matrix.col + that.x - 1;
-					var cell = $('#' + matrix.matrixId + '> div').eq(ind);
-					cell.removeClass('fruit');
-					matrix.addFruit();
-					score += 100;
-					$('#score').html(score);
-				}
-				
-				if ((that.x > matrix.row) || (that.y > matrix.col) || (that.x < 1) || (that.y < 1) ||
-									matrix.getCell(that.x, that.y, 'on')) {
-					clearInterval(intervalId);
-					alert('Игра окончена!');
-				}
-				else {
-					matrix.setCell(that.snake[(that.snake.length - 1)].x, that.snake[(that.snake.length - 1)].y, false);
-					that.snake.unshift({x:that.x, y:that.y});
-					that.snake.pop();
-					matrix.setCell(that.snake[0].x, that.snake[0].y, true);
-				}
-			}, speed);
+		this.moveSnake = function(matrix) {
+			if (that.course == 'right')
+				that.x++;
+			if (that.course == 'left')
+				that.x--;
+			if (that.course == 'up')
+				that.y--;
+			if (that.course == 'down')
+				that.y++;
+			// Проверка наезда на себя
+			if (matrix.getCell(that.x, that.y, 'on')) {
+				that.alive = false;
+			}
+			
+			matrix.setCell(that.body[(that.body.length - 1)].x, that.body[(that.body.length - 1)].y, false);
+			that.body.unshift({x:that.x, y:that.y});
+			that.body.pop();
+			matrix.setCell(that.body[0].x, that.body[0].y, true);		
 		}
 
 		// Функция обработки нажатия клавиш.
@@ -142,63 +130,117 @@ $(document).ready(function() {
 
 		// Функция роста змейки
 		this.growSnake = function(xg, yg) {
-			that.snake.unshift({x:xg, y:yg});
+			that.body.unshift({x:xg, y:yg});
 		}
 	}
-
 
 	//
 	// Функция - ядро игры
 	//
-	function gamePlay(matrix, snake, speed) {
-		// Создаем поле
+	function gamePlay(matrix, snake, speed) {	
+		// Добавляем поле
 		matrix.create();
-		// Создаем фрукт
+		
+		// Добавляем фрукт
 		matrix.addFruit();
 
-		// Создаем змейку
+		// Добавляем змейку
 		snake.createSnake(3, matrix);
-		// Вызываем функцию движения
-		snake.moveSnake(matrix, speed);
+		
 		// Вешаем реакцию на события клавиатуры
 		$(document).keydown(snake.controlSnake);
+		var score = 0;
+		var intervalId = setInterval(function(){
+			if (matrix.getCell(snake.x, snake.y, 'fruit')) {
+				snake.body.unshift({x:snake.x, y:snake.y});
+				var ind = (snake.y - 1) * matrix.col + snake.x - 1;
+				var cell = $('#' + matrix.matrixId + '> div').eq(ind);
+				cell.removeClass('fruit');
+				matrix.addFruit();
+				score += 100;
+			}
+			if( ((snake.x >= matrix.col) && (snake.course == 'right')) 
+				|| ((snake.y >= matrix.row) && (snake.course == 'down'))
+				|| ((snake.x <= 1) && (snake.course == 'left'))
+				|| ((snake.y <= 1) && (snake.course == 'up')) || !(snake.alive) )
+			{
+				clearInterval(intervalId);
+				$('#gameover').fadeTo(1500, 0.7);
+			}
+			else {
+				// Вызываем функцию движения
+				snake.moveSnake(matrix);
+			}
+			$('#score').html(score);
+		}, speed);
 	}
 
+//
+// Точка входа.
+//
 	// Создаем экземпляр класса Matrix
 	var matrix = new Matrix('matrix1', 40, 40);
 
 	// Создаем экземпляр класса Snake
 	var snake = new Snake(3, 35, 'right');
 	
+	var speed = 100;
+
 	// Запускаем игру
 	$('#oldMan').click(function() {
+		speed = 500;
 		$('#start').css({'display':'none'});
 		$('#container').css({'display':'block'});
-		gamePlay(matrix, snake, 500);
+		gamePlay(matrix, snake, speed);
 	});
 	$('#noob').click(function() {
+		speed = 200;
 		$('#start').css({'display':'none'});
 		$('#container').css({'display':'block'});
-		gamePlay(matrix, snake, 200);
+		gamePlay(matrix, snake, speed);
 	});
 	$('#amateur').click(function() {
+		speed = 100;
 		$('#start').css({'display':'none'});
 		$('#container').css({'display':'block'});
-		gamePlay(matrix, snake, 100);
+		gamePlay(matrix, snake, speed);
 	});
 	$('#pro').click(function() {
+		speed = 30;
 		$('#start').css({'display':'none'});
 		$('#container').css({'display':'block'});
-		gamePlay(matrix, snake, 30);
+		gamePlay(matrix, snake, speed);
 	});
 	$('#master').click(function() {
+		speed = 15;
 		$('#start').css({'display':'none'});
 		$('#container').css({'display':'block'});
-		gamePlay(matrix, snake, 15);
+		gamePlay(matrix, snake, speed);
 	});
 	$('#superman').click(function() {
+		speed = 7;
 		$('#start').css({'display':'none'});
 		$('#container').css({'display':'block'});
-		gamePlay(matrix, snake, 7);
+		gamePlay(matrix, snake, speed);
+	});
+
+	$('#more').click(function() {
+		$('#gameover').css({'display':'none'});
+		$('#matrix1').empty();
+		snake.x = 3;
+		snake.y = 35;
+		snake.course = 'right';
+		snake.alive = true;
+		gamePlay(matrix, snake, speed);
+	});
+	$('#main').click(function() {
+		$('#matrix1').empty();
+		$('#gameover').css({'display':'none'});
+		$('#container').css({'display':'none'});
+		$('#start').css({'display':'block'});
+		snake.x = 3;
+		snake.y = 35;
+		snake.course = 'right';
+		snake.alive = true;
 	});
 });
